@@ -1,8 +1,9 @@
 package com.smartbank.accountservice.service;
 
 import com.smartbank.accountservice.dto.CustomerAccountDTO;
+import com.smartbank.accountservice.entity.Account;
+import com.smartbank.accountservice.entity.Customer;
 import com.smartbank.accountservice.exception.AccsException;
-import com.smartbank.accountservice.response.RegistrationResponse;
 
 public interface AccountService {
 
@@ -12,5 +13,5 @@ public interface AccountService {
 	 * @throws {@link AccsException} if user already exists
 	 * @return
 	 */
-	public RegistrationResponse createAccount(CustomerAccountDTO customerDto) throws AccsException;
+	public Account createAccount(Customer customer,CustomerAccountDTO customerDto) throws AccsException;
 }

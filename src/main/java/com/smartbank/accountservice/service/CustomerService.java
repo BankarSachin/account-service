@@ -5,6 +5,7 @@ import com.smartbank.accountservice.dto.LoginRequest;
 import com.smartbank.accountservice.dto.LoginResponse;
 import com.smartbank.accountservice.entity.Customer;
 import com.smartbank.accountservice.exception.AccsException;
+import com.smartbank.accountservice.response.RegistrationResponse;
 
 /**
  * Handles Customer Related operations
@@ -20,7 +21,7 @@ public interface CustomerService {
 	 * @param customerDto Input from front end to create/register customer
 	 * @return Generated Customer details
 	 */
-	Customer registerCustomer(CustomerAccountDTO customerDto);
+	RegistrationResponse registerCustomer(CustomerAccountDTO customerDto) throws AccsException;
 	
 	Customer updateCustomer(Customer customer) throws AccsException;
 	

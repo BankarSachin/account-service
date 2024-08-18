@@ -50,25 +50,11 @@ public class AccountServiceImpl implements AccountService {
 	 */
 	@Override
 	@Transactional
-	public RegistrationResponse createAccount(CustomerAccountDTO customerDto) throws AccsException {
+	public Account createAccount(Customer customer,CustomerAccountDTO customerDto) throws AccsException {
 		final String methodName = "createAccount";
 		try {
-			if (customerService.doesCustomerExistsByEmail(customerDto.getEmail())) {
-				throw new AccsException(ExceptionCode.ACCS_CUSTOMER_ALREADY_EXISTS);
-			}
-			
-			if (customerService.doesCustomerExistsByPhoneNumber(customerDto.getPhoneNumber())) {
-				throw new AccsException(ExceptionCode.ACCS_CUSTOMER_ALREADY_EXISTS);
-			}
 			final String accountNumber = generateAccountNumber(customerDto.getBranchCode());
-			Customer customer =  customerService.registerCustomer(customerDto);
-			Account account = accountRepository.save(AccountMapper.toEntity(customer, accountNumber, customerDto));
-			customer.setAccount(account);
-			customerService.updateCustomer(customer);
-			return new RegistrationResponse(customer);
-		} catch (AccsException e) {
-			log.error("{} - error {}",methodName,e.getMessage(),e);
-			throw e;
+			return accountRepository.save(AccountMapper.toEntity(customer, accountNumber, customerDto));
 		} catch (Exception e) {
 			log.error("{} - error {}",methodName,e.getMessage(),e);
 			throw new AccsException(ExceptionCode.ACCS_UNKNOWN_EXCEPTION, e);

@@ -29,18 +29,6 @@ public class AccountController {
 	@Autowired
 	private AccountService accountService;
 
-	@PostMapping(value = "/accounts/createAccount",consumes = { MediaType.APPLICATION_JSON_VALUE },produces = { MediaType.APPLICATION_JSON_VALUE })
-	public ResponseEntity<RegistrationResponse> createAccount(@RequestHeader Map<String, String> headers,
-		@Valid @RequestBody CustomerAccountDTO customerAccountDto) throws AccsException {
-		final String methodName = "createAccount";
-			log.info("{} - Request received for Account Creation", methodName);
-			final RegistrationResponse registrationResponse = accountService.createAccount(customerAccountDto);
-			log.info("{} - Account created successfully for {}", methodName,registrationResponse.getEmail());
-			return ResponseEntity
-					.status(HttpStatus.CREATED)
-					.body(registrationResponse);
-	}
-	
 	@PostMapping(value = "/accounts/{accountnumber}/deposit",consumes = { MediaType.APPLICATION_JSON_VALUE },produces = { MediaType.APPLICATION_JSON_VALUE })
 	public ResponseEntity<RegistrationResponse> deposit(@RequestHeader Map<String, String> headers,
 		@Valid @RequestBody CustomerAccountDTO customerAccountDto) throws AccsException {
