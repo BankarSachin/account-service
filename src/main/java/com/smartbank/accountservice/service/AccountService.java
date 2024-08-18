@@ -1,6 +1,10 @@
 package com.smartbank.accountservice.service;
 
+import com.smartbank.accountservice.dto.BalanceReponse;
 import com.smartbank.accountservice.dto.CustomerAccountDTO;
+import com.smartbank.accountservice.dto.DepositResponse;
+import com.smartbank.accountservice.dto.TransactionRequest;
+import com.smartbank.accountservice.dto.WithdrawalResponse;
 import com.smartbank.accountservice.entity.Account;
 import com.smartbank.accountservice.entity.Customer;
 import com.smartbank.accountservice.exception.AccsException;
@@ -14,4 +18,31 @@ public interface AccountService {
 	 * @return
 	 */
 	public Account createAccount(Customer customer,CustomerAccountDTO customerDto) throws AccsException;
+	
+	/**
+	 * Deposits given ammout to use 
+	 * @param accounNumber
+	 * @param depositAmmounr
+	 * @return
+	 * @throws AccsException
+	 */
+	public DepositResponse deposit(String accounNumber,TransactionRequest transactionRequest) throws AccsException;
+	
+	
+	/**
+	 * Deposits given ammout to use 
+	 * @param accounNumber
+	 * @param depositAmmounr
+	 * @return
+	 * @throws AccsException
+	 */
+	public WithdrawalResponse withdrawal(String accounNumber,TransactionRequest transactionRequest) throws AccsException;
+	
+	/**
+	 * Gives Back Current Balance 
+	 * @param accounNumber
+	 * @return
+	 * @throws AccsException
+	 */
+	public BalanceReponse balance(String accounNumber) throws AccsException;
 }

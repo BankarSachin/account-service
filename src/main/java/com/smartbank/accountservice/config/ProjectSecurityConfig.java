@@ -22,8 +22,8 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 public class ProjectSecurityConfig {
 
 	 private static final String[] PUBLIC_URLS = {
-	            "/account-service/v1/createAccount",
-	            "/customer-service/v1/authenticate",
+	            "/v1/customer/register",
+	            "/v1/customer/authenticate",
 	            "/actuator/**"
 	    };
 	

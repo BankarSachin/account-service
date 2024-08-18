@@ -14,7 +14,6 @@ import com.smartbank.accountservice.mapper.CustomerMapper;
 import com.smartbank.accountservice.repository.CustomerRepository;
 import com.smartbank.accountservice.response.RegistrationResponse;
 
-import jakarta.persistence.OptimisticLockException;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 
@@ -56,21 +55,11 @@ public class CustomerServiceImpl implements CustomerService{
 			log.info("{} - Setup Link between customer and account", methodName);
 			return new RegistrationResponse(registeredCustomer);
 		} catch (AccsException e) {
-			log.error("{} - error {}",methodName,e.getMessage());
+			log.error("{} - Error while registering customer {}",methodName,e.getMessage());
 			throw e;
 		} catch (Exception e) {
-			log.error("{} - error {}",methodName,e.getMessage());
+			log.error("{} - Unknown error while registering customer {}",methodName,e.getMessage());
 			throw new AccsException(ExceptionCode.ACCS_UNKNOWN_EXCEPTION, e);
-		}
-	}
-	
-	public Customer updateCustomer(Customer customer) throws AccsException {
-		final String methodName = "updateCustomer";
-		try {
-			return customerRepository.save(customer);
-		} catch (IllegalArgumentException | OptimisticLockException e) {
-			log.error("{} - error {}",methodName,e.getMessage(),e);
-			throw new AccsException(ExceptionCode.ACCS_DB_EXCEPTION, e);
 		}
 	}
 	
@@ -85,7 +74,7 @@ public class CustomerServiceImpl implements CustomerService{
 	}
 
 	@Override
-	public LoginResponse login(LoginRequest loginrequest) throws AccsException {
+	public LoginResponse authenticate(LoginRequest loginrequest) throws AccsException {
 		return null;
 	}
 }

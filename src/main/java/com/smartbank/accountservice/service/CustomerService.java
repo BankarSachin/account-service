@@ -23,9 +23,7 @@ public interface CustomerService {
 	 */
 	RegistrationResponse registerCustomer(CustomerAccountDTO customerDto) throws AccsException;
 	
-	Customer updateCustomer(Customer customer) throws AccsException;
-	
-	LoginResponse login(LoginRequest loginrequest) throws AccsException;
+	LoginResponse authenticate(LoginRequest loginrequest) throws AccsException;
 	
 	boolean doesCustomerExistsByEmail(String email);
 	

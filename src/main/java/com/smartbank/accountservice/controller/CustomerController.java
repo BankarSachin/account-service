@@ -24,14 +24,14 @@ import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 
 @RestController
-@RequestMapping("/customer-service/v1/")
+@RequestMapping("/v1/")
 @Slf4j
 public class CustomerController {
 
 	@Autowired
 	private CustomerService customerService;
 	
-	@PostMapping(value = "/register",consumes = { MediaType.APPLICATION_JSON_VALUE },produces = { MediaType.APPLICATION_JSON_VALUE })
+	@PostMapping(value = "/customer/register",consumes = { MediaType.APPLICATION_JSON_VALUE },produces = { MediaType.APPLICATION_JSON_VALUE })
 	public ResponseEntity<RegistrationResponse> register(@RequestHeader Map<String, String> headers,
 		@Valid @RequestBody CustomerAccountDTO customerAccountDto) throws AccsException {
 		final String methodName = "createAccount";
@@ -43,10 +43,10 @@ public class CustomerController {
 					.body(registrationResponse);
 	}
 	
-    @PostMapping("/authenticate")
-    public ResponseEntity<LoginResponse> authenticate(HttpServletRequest request,@RequestBody LoginRequest loginRequest)
+    @PostMapping("/customer/authenticate")
+    public ResponseEntity<LoginResponse> authenticate(HttpServletRequest request, @Valid @RequestBody LoginRequest loginRequest)
             throws AccsException {
-    	final LoginResponse loginResponse = customerService.login(loginRequest);
+    	final LoginResponse loginResponse = customerService.authenticate(loginRequest);
     	return ResponseEntity.ok(loginResponse);
     }
 }

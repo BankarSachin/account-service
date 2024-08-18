@@ -6,14 +6,17 @@ package com.smartbank.accountservice.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.smartbank.accountservice.dto.BalanceReponse;
 import com.smartbank.accountservice.dto.CustomerAccountDTO;
+import com.smartbank.accountservice.dto.DepositResponse;
+import com.smartbank.accountservice.dto.TransactionRequest;
+import com.smartbank.accountservice.dto.WithdrawalResponse;
 import com.smartbank.accountservice.entity.Account;
 import com.smartbank.accountservice.entity.Customer;
 import com.smartbank.accountservice.exception.AccsException;
 import com.smartbank.accountservice.exception.ExceptionCode;
 import com.smartbank.accountservice.mapper.AccountMapper;
 import com.smartbank.accountservice.repository.AccountRepository;
-import com.smartbank.accountservice.response.RegistrationResponse;
 
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
@@ -30,9 +33,6 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class AccountServiceImpl implements AccountService {
 
-	@Autowired
-	private CustomerService customerService;
-	
 	@Autowired
 	private AccountRepository accountRepository;
 	
@@ -71,5 +71,38 @@ public class AccountServiceImpl implements AccountService {
 		Long accountSequenceNumber = accountRepository.getNextSequenceValue();
 		final String branchCodepart = branchCode.substring(branchCode.length()-4, branchCode.length()); 
 		return branchCodepart + String.format("%06d", accountSequenceNumber);
+	}
+
+
+	@Override
+	public DepositResponse deposit(String accounNumber, TransactionRequest transactionRequest) throws AccsException {
+		/**
+		 * Call Transaction Service through restClient
+		 * After successful transaction perfrom ammount addition here 
+		 * 
+		 * ****/
+		
+		return null;
+	}
+
+
+	@Override
+	public WithdrawalResponse withdrawal(String accounNumber, TransactionRequest transactionRequest) throws AccsException {
+		/**
+		 * Perform Baisc Check of Balance
+		 * Call Transaction Service through restClient
+		 * After successful transaction perfrom amount subsctraction here 
+		 * **/
+		return null;
+	}
+
+
+	@Override
+	public BalanceReponse balance(String accounNumber) throws AccsException {
+		/**
+		 * Get Current Balance
+		 * 
+		 * **/
+		return null;
 	}
 }

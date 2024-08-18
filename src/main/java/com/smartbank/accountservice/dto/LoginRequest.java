@@ -1,7 +1,12 @@
 package com.smartbank.accountservice.dto;
 
+import lombok.Data;
+
 /**
  * @author Sachin
  */
-public record LoginRequest(String customerId, String password) {
+@Data
+public class LoginRequest {
+	private String loginId;
+	private String password;
 }
