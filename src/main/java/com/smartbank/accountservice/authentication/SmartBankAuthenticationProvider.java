@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.ProviderManager;
@@ -32,6 +34,7 @@ import com.smartbank.accountservice.repository.CustomerRepository;
  * @author Sachin
  */
 @Component
+@Order(Ordered.HIGHEST_PRECEDENCE)
 public class SmartBankAuthenticationProvider implements AuthenticationProvider {
 
 	@Autowired

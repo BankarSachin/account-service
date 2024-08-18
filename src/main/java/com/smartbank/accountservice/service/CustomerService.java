@@ -3,7 +3,6 @@ package com.smartbank.accountservice.service;
 import com.smartbank.accountservice.dto.CustomerAccountDTO;
 import com.smartbank.accountservice.dto.LoginRequest;
 import com.smartbank.accountservice.dto.LoginResponse;
-import com.smartbank.accountservice.entity.Customer;
 import com.smartbank.accountservice.exception.AccsException;
 import com.smartbank.accountservice.response.RegistrationResponse;
 

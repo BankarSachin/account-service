@@ -13,21 +13,29 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import com.smartbank.accountservice.exception.handler.GlobalAuthenticationEntryPoint;
+import com.smartbank.accountservice.filter.JwtAuthenticationFilter;
+
+import lombok.RequiredArgsConstructor;
+
 @Configuration
 @EnableWebSecurity
+@RequiredArgsConstructor
 public class ProjectSecurityConfig {
 
 	 private static final String[] PUBLIC_URLS = {
 	            "/v1/customer/register",
-	            "/v1/customer/authenticate",
 	            "/actuator/**"
 	    };
 	
-	/**
+	 private GlobalAuthenticationEntryPoint globalAuthenticationEntryPoint;
+	 private JwtAuthenticationFilter jwtAuthenticationFilter;
+	 /**
 	 * <p><b>SessionManagement</b> : Do not use Session Managment
 	 * <p><b>CORS</b> : Check configuration in {@link corsConfigurationSource} method
 	 * <p><b>CSRF</b> : Do not use Session Managment
@@ -53,8 +61,11 @@ public class ProjectSecurityConfig {
 					 			.requestMatchers("/withdraw").hasAnyAuthority("ADMIN","WITHDRAW_FUNDS")
 					 			.requestMatchers("/balanceInquiry").hasAnyAuthority("ADMIN","VIEW_BALANCE")
 					)
+			.exceptionHandling(exhandler -> exhandler.authenticationEntryPoint(globalAuthenticationEntryPoint))
 			.httpBasic(Customizer.withDefaults())
 			.formLogin(formlogin -> formlogin.disable());
+	
+	 http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 		
      return http.build();
     }
