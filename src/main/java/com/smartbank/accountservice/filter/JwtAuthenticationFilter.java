@@ -44,4 +44,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter{
 		filterChain.doFilter(request, response);
 	}
 
+	 /**
+	 * Do not execute this filter for authenticate endpoint
+	 */
+	@Override
+    protected boolean shouldNotFilter(HttpServletRequest request) {
+        return request.getServletPath().equals("/v1/customer/authenticate");
+    }
+
 }

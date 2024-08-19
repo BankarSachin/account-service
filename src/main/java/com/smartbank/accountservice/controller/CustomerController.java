@@ -47,6 +47,12 @@ public class CustomerController {
 					.body(registrationResponse);
 	}
 	
+    /**
+     * If customer login successful then return JWT token
+     * JWT token required for subsequent requests
+     * @return
+     * @throws AccsException
+     */
     @PostMapping("/customer/authenticate")
     public ResponseEntity<TokenResponse> authenticate()
             throws AccsException {

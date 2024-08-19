@@ -2,6 +2,7 @@ package com.smartbank.accountservice.service;
 
 import java.util.Collection;
 import java.util.Date;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.GrantedAuthority;
@@ -51,7 +52,7 @@ public class TokenServiceImpl implements TokenService{
 	        		 	.setHeaderParam("typ", "JWT")
 	            		.setIssuer("SMBK")
 	            		.setSubject(name)
-	                    .claim("permissions", authorities)
+	                    .claim("permissions", authorities.stream().map(GrantedAuthority :: getAuthority).collect(Collectors.joining(",")))
 	                    .setIssuedAt(new Date())
 	                    .setExpiration(new Date((new Date()).getTime() + expiration))
 	                    .signWith(SignatureAlgorithm.HS512, secret).compact();

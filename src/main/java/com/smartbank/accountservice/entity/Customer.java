@@ -65,7 +65,7 @@ public class Customer {
 	@OneToMany(mappedBy = "customer",cascade = CascadeType.ALL,fetch = FetchType.EAGER)
 	private List<Account> account;
 
-	@ManyToMany
+	@ManyToMany(fetch = FetchType.EAGER)
 	@JoinTable(
 		name = "customer_permission_mappings",
 		joinColumns = @JoinColumn(name="customer_id"),
