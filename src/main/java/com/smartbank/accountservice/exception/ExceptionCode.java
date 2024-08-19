@@ -79,8 +79,10 @@ public class ExceptionCode implements Serializable{
 	
 	public static final ExceptionCode ACCS_CUSTOMER_ALREADY_EXISTS = new ExceptionCode("ACCS4003", "ACCS_CUSTOMER_ALREADY_EXISTS", "Customer already exists",HttpStatus.BAD_REQUEST);
 	//Bad Credentials
-	public static final ExceptionCode ACCS_BAD_CREDENTIALS = new ExceptionCode("ACCS4002", "ACCS_BAD_CREDENTIALS", "Bad Credentials",HttpStatus.UNAUTHORIZED);
+	public static final ExceptionCode ACCS_BAD_CREDENTIALS = new ExceptionCode("ACCS4004", "ACCS_BAD_CREDENTIALS", "Bad Credentials",HttpStatus.UNAUTHORIZED);
 	
-	public static final ExceptionCode ACC_AUTHZ_ERROR = new ExceptionCode("ACCS4002", "ACC_AUTHZ_ERROR", "Autheorization error",HttpStatus.FORBIDDEN);
+	public static final ExceptionCode ACCS_JWT_ERROR = new ExceptionCode("ACCS4003", "ACCS_INVALID_JWT", "Authentication failed.{0}",HttpStatus.UNAUTHORIZED);
+	
+	public static final ExceptionCode ACC_AUTHZ_ERROR = new ExceptionCode("ACCS4005", "ACC_AUTHZ_ERROR", "Autheorization error",HttpStatus.FORBIDDEN);
 
 }

@@ -1,13 +1,23 @@
 package com.smartbank.accountservice.filter;
 
 import java.io.IOException;
+import java.util.List;
+import java.util.Optional;
 
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.AuthorityUtils;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import com.smartbank.accountservice.exception.AccsException;
+import com.smartbank.accountservice.exception.ExceptionCode;
 import com.smartbank.accountservice.service.AuthzService;
 import com.smartbank.accountservice.service.TokenService;
 
+import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -34,14 +44,65 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter{
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
 			throws ServletException, IOException {
-		log.info("In JWTAutentication Filter");
-		try {
-			log.info("In JWTAutentication Filter {} ",authzService.validateAccess("15", "4567000022"));
-		} catch (Exception e) {
-			e.printStackTrace();
+		final String methodName = "doFilterInternal";
+		if (SecurityContextHolder.getContext().getAuthentication() != null) {
+            log.info("{} - User is already authenticated",methodName);
+            filterChain.doFilter(request, response);
+            return;
+        }
+
+        String requestTokenHeader = request.getHeader("Authorization");
+
+        if (requestTokenHeader == null) {
+            filterChain.doFilter(request, response);
+            log.warn("{} - Authorization header missing",methodName);
+            return;
+        }
+
+        if (!requestTokenHeader.startsWith("Bearer ")) {
+           throw new BadCredentialsException("Invalid Authorization header");
+        }
+
+        try {
+        	 String token = requestTokenHeader.substring(7);
+             final Claims claims =  tokenService.validateToken(token);
+             
+             final String customerid =  claims.getSubject();
+             final String permissions = (String) claims.get("permissions");
+             
+             Optional<String> accountNumberOptional = extractAccountNumberFromPathParams(request);
+             String accountNumber = accountNumberOptional.orElseThrow(()->new AccsException(ExceptionCode.ACCS_INVALID_INPUT));
+             accountNumber = sanitizeAccountNumber(accountNumber);
+             
+             final boolean authz = authzService.validateAccess(customerid, accountNumber);
+             log.info("{} - Authorization check status ? {}",methodName,authz);
+             if (authz) {
+             	 Authentication auth = new UsernamePasswordAuthenticationToken(customerid, null,
+                             AuthorityUtils.commaSeparatedStringToAuthorityList(permissions));
+             	 SecurityContextHolder.getContext().setAuthentication(auth);
+     		}
+		} catch (AccsException e) {
+			log.error("{} - Error occured during JWT token validation {}", e.getMessage());
+			throw new BadCredentialsException(e.getMessage());
 		}
 
 		filterChain.doFilter(request, response);
+	}
+	
+	private Optional<String> extractAccountNumberFromPathParams(HttpServletRequest request) {
+		String pathInfo = request.getServletPath();
+	    if (pathInfo != null) {
+	        String[] parts = pathInfo.split("/");
+	        int indexOfName = List.of(parts).indexOf("accounts");
+	        if (indexOfName != -1) {
+	            return Optional.of(parts[indexOfName + 1]);
+	        }
+	    }
+	    return Optional.empty();
+	}
+	
+	private String sanitizeAccountNumber(String accountNumber) {
+		return accountNumber.replaceAll("[^0-9]", "");
 	}
 
 	 /**

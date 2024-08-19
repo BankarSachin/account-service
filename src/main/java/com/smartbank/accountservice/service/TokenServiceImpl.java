@@ -6,16 +6,20 @@ import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import com.smartbank.accountservice.dto.TokenResponse;
+import com.smartbank.accountservice.enums.ApiMessages;
 import com.smartbank.accountservice.exception.AccsException;
 import com.smartbank.accountservice.exception.ExceptionCode;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.SignatureException;
+import io.jsonwebtoken.UnsupportedJwtException;
 import lombok.extern.slf4j.Slf4j;
 
 @Service
@@ -27,20 +31,22 @@ public class TokenServiceImpl implements TokenService{
 
     @Value("${jwt.expiration}")
     private long expiration;
-    
-   	@Override
-	public TokenResponse generateToken(UserDetails userDetails) {
-		return null;
-	}
 
 	@Override
 	public Claims validateToken(String token) throws AccsException {
-		return null;
-	}
-
-	@Override
-	public String getUsernameFromToken(String token) {
-		return null;
+		try {
+            return Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody();
+        } catch (ExpiredJwtException e) {
+            throw new AccsException(ExceptionCode.ACCS_JWT_ERROR,new String[] {ApiMessages.JWT_TOKEN_EXPIRED_ERROR.getMessage()});
+        } catch (UnsupportedJwtException e) {
+        	 throw new AccsException(ExceptionCode.ACCS_JWT_ERROR,new String[] {ApiMessages.JWT_TOKEN_UNSUPPORTED_ERROR.getMessage()});
+        } catch (MalformedJwtException e) {
+        	 throw new AccsException(ExceptionCode.ACCS_JWT_ERROR,new String[] {ApiMessages.JWT_TOKEN_MALFORMED_ERROR.getMessage()});
+        } catch (SignatureException e) {
+        	 throw new AccsException(ExceptionCode.ACCS_JWT_ERROR,new String[] {ApiMessages.JWT_TOKEN_INVALID_ERROR.getMessage()});
+        } catch (IllegalArgumentException e) {
+        	 throw new AccsException(ExceptionCode.ACCS_JWT_ERROR,new String[] {ApiMessages.JWT_TOKEN_EMPTY_ERROR.getMessage()});
+        }
 	}
 
 	@Override
