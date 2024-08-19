@@ -16,7 +16,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
@@ -62,8 +62,8 @@ public class Customer {
 	@Column(name = "updated_date", nullable = false)
 	private LocalDateTime updatedDate;
 	
-	@OneToOne(mappedBy = "customer",cascade = CascadeType.ALL,fetch = FetchType.LAZY)
-	private Account account;
+	@OneToMany(mappedBy = "customer",cascade = CascadeType.ALL,fetch = FetchType.EAGER)
+	private List<Account> account;
 
 	@ManyToMany
 	@JoinTable(

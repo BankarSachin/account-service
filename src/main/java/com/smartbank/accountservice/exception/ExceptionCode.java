@@ -71,6 +71,8 @@ public class ExceptionCode implements Serializable{
 	//Server Error Series
 	public static final ExceptionCode ACCS_UNKNOWN_EXCEPTION = new ExceptionCode("ACCS5001", "ACCS_UNKNOWN_EXCEPTION", "An unexcepted exception occured",HttpStatus.INTERNAL_SERVER_ERROR);
 	
+	public static final ExceptionCode ACC_CUSTOMER_NON_EXIST = new ExceptionCode("ACCS5002", "ACC_CUSTOMER_NON_EXIST", "Customer does not exists",HttpStatus.INTERNAL_SERVER_ERROR);
+	
 	public static final ExceptionCode ACCS_DB_EXCEPTION = new ExceptionCode("ACCS5002", "ACCS_DB_EXCEPTION", "Database level exception ocurred",HttpStatus.INTERNAL_SERVER_ERROR);
 	//Client Input Error Series
 	public static final ExceptionCode ACCS_INVALID_INPUT = new ExceptionCode("ACCS4001", "ACCS_INVALID_INPUT", "Missing or invalid request parameters",HttpStatus.BAD_REQUEST);
@@ -78,4 +80,7 @@ public class ExceptionCode implements Serializable{
 	public static final ExceptionCode ACCS_CUSTOMER_ALREADY_EXISTS = new ExceptionCode("ACCS4003", "ACCS_CUSTOMER_ALREADY_EXISTS", "Customer already exists",HttpStatus.BAD_REQUEST);
 	//Bad Credentials
 	public static final ExceptionCode ACCS_BAD_CREDENTIALS = new ExceptionCode("ACCS4002", "ACCS_BAD_CREDENTIALS", "Bad Credentials",HttpStatus.UNAUTHORIZED);
+	
+	public static final ExceptionCode ACC_AUTHZ_ERROR = new ExceptionCode("ACCS4002", "ACC_AUTHZ_ERROR", "Autheorization error",HttpStatus.FORBIDDEN);
+
 }

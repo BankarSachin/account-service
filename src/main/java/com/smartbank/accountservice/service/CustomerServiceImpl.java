@@ -1,11 +1,16 @@
 package com.smartbank.accountservice.service;
 
+
+
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.smartbank.accountservice.dto.CustomerAccountDTO;
 import com.smartbank.accountservice.dto.LoginRequest;
-import com.smartbank.accountservice.dto.LoginResponse;
+import com.smartbank.accountservice.dto.TokenResponse;
 import com.smartbank.accountservice.entity.Account;
 import com.smartbank.accountservice.entity.Customer;
 import com.smartbank.accountservice.exception.AccsException;
@@ -50,7 +55,9 @@ public class CustomerServiceImpl implements CustomerService{
 			log.info("{} - Customer registered successfully! {}", methodName,registeredCustomer.getEmail());
 			Account account = accountService.createAccount(registeredCustomer,customerDto);
 			log.info("{} - Created zero balance account as well", methodName);
-			registeredCustomer.setAccount(account);
+			List<Account> accounts = new ArrayList<>();
+			accounts.add(account);
+			registeredCustomer.setAccount(accounts);
 			customerRepository.save(registeredCustomer);
 			log.info("{} - Setup Link between customer and account", methodName);
 			return new RegistrationResponse(registeredCustomer);
@@ -74,7 +81,7 @@ public class CustomerServiceImpl implements CustomerService{
 	}
 
 	@Override
-	public LoginResponse authenticate(LoginRequest loginrequest) throws AccsException {
+	public TokenResponse authenticate(LoginRequest loginrequest) throws AccsException {
 		return null;
 	}
 }

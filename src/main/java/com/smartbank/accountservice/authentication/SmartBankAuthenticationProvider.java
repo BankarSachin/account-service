@@ -57,12 +57,16 @@ public class SmartBankAuthenticationProvider implements AuthenticationProvider {
             throw new BadCredentialsException("Invalid customerid or email format");
         }
         if (passwordEncoder.matches(pwd, customer.getPassword())) {
-            return new UsernamePasswordAuthenticationToken(customer.getCustomerId(), pwd, getGrantedAuthorities(customer.getCustomerPermissions()));
+            return new UsernamePasswordAuthenticationToken(customer.getCustomerId(), pwd, getDefaultGrantedAuthorities());
         } else {
             throw new BadCredentialsException("Invalid password!");
         }
 	}
-
+	
+	private Collection<? extends GrantedAuthority> getDefaultGrantedAuthorities() {
+		return List.of(new SimpleGrantedAuthority("ADMIN"));
+	}
+	
 	private Collection<? extends GrantedAuthority> getGrantedAuthorities(List<Permissions> permissions) {
 		return permissions.stream()
 				.map(t -> new SimpleGrantedAuthority(t.getPermission()))

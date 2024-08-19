@@ -32,9 +32,10 @@ public class ProjectSecurityConfig {
 	            "/v1/customer/register",
 	            "/actuator/**"
 	    };
-	
-	 private GlobalAuthenticationEntryPoint globalAuthenticationEntryPoint;
-	 private JwtAuthenticationFilter jwtAuthenticationFilter;
+	 
+	 private final GlobalAuthenticationEntryPoint globalAuthenticationEntryPoint;
+	 private final JwtAuthenticationFilter jwtAuthenticationFilter;
+	 
 	 /**
 	 * <p><b>SessionManagement</b> : Do not use Session Managment
 	 * <p><b>CORS</b> : Check configuration in {@link corsConfigurationSource} method
@@ -57,9 +58,10 @@ public class ProjectSecurityConfig {
 					 request -> request
 					 			.requestMatchers(PUBLIC_URLS).permitAll()
 					 			.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-					 			.requestMatchers("/deposit").hasAnyAuthority("ADMIN","DEPOSIT_FUNDS")
-					 			.requestMatchers("/withdraw").hasAnyAuthority("ADMIN","WITHDRAW_FUNDS")
-					 			.requestMatchers("/balanceInquiry").hasAnyAuthority("ADMIN","VIEW_BALANCE")
+					 			.requestMatchers("/v1/accounts/*/deposit").hasAnyAuthority("ADMIN","DEPOSIT_FUNDS")
+					 			.requestMatchers("/v1/accounts/*/withdrawal").hasAnyAuthority("ADMIN","WITHDRAW_FUNDS")
+					 			.requestMatchers("/v1/accounts/*/balance").hasAnyAuthority("ADMIN","VIEW_BALANCE")
+					 			.requestMatchers("/v1/customer/authenticate").authenticated()
 					)
 			.exceptionHandling(exhandler -> exhandler.authenticationEntryPoint(globalAuthenticationEntryPoint))
 			.httpBasic(Customizer.withDefaults())

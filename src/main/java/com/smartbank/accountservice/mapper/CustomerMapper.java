@@ -7,6 +7,8 @@ import org.springframework.stereotype.Component;
 import com.smartbank.accountservice.dto.CustomerAccountDTO;
 import com.smartbank.accountservice.entity.Customer;
 
+import lombok.AllArgsConstructor;
+
 
 /**
  * Maps {@link CustomerAccountDTO} to new {@link Customer}

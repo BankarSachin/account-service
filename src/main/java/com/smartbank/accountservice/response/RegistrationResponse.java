@@ -25,8 +25,8 @@ public class RegistrationResponse {
     	this.name = customer.getName();
     	this.email = customer.getEmail();
     	this.phoneNumber = customer.getPhoneNumber();
-    	this.accountNumber = customer.getAccount().getAccountNumber();
-    	this.branch = customer.getAccount().getBranchCode();
-    	this.accountType = customer.getAccount().getAccountType();
+    	this.accountNumber = customer.getAccount().get(0).getAccountNumber();
+    	this.branch = customer.getAccount().get(0).getBranchCode();
+    	this.accountType = customer.getAccount().get(0).getAccountType();
     }
 }
