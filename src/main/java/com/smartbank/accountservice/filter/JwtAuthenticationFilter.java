@@ -1,9 +1,12 @@
 package com.smartbank.accountservice.filter;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -12,8 +15,14 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.smartbank.accountservice.constant.SysConstant;
 import com.smartbank.accountservice.exception.AccsException;
+import com.smartbank.accountservice.exception.ErrorStackTrace;
 import com.smartbank.accountservice.exception.ExceptionCode;
+import com.smartbank.accountservice.exception.bean.ErrorInfo;
+import com.smartbank.accountservice.exception.bean.ErrorStack;
 import com.smartbank.accountservice.service.AuthzService;
 import com.smartbank.accountservice.service.TokenService;
 
@@ -83,9 +92,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter{
      		}
 		} catch (AccsException e) {
 			log.error("{} - Error occured during JWT token validation {}", e.getMessage());
-			throw new BadCredentialsException(e.getMessage());
+			handleError(request, response, e); // Had to handled this way because 
+			return;
 		}
-
+        
+        //No issues continue with Filter chain
 		filterChain.doFilter(request, response);
 	}
 	
@@ -119,4 +130,44 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter{
 		return List.of("/v1/customer/authenticate","/v1/customer/register").contains(request.getServletPath());
     }
 
+	/**
+	 * Error has been handled this way because Spring was eating our exception message and giving generic error message
+	 * @param request
+	 * @param response
+	 * @param accsException
+	 * @throws IOException
+	 */
+	private void handleError(HttpServletRequest request,HttpServletResponse response,AccsException accsException) throws IOException {
+		final String requestCorelationId = request.getHeader(SysConstant.SYS_REQ_CORR_ID_HEADER);
+		List<String> causes = new ArrayList<>();
+		List<ErrorStack> errorStacks = new ArrayList<>();
+		
+		ExceptionCode exceptionCode = ExceptionCode.ACCS_BAD_CREDENTIALS;
+		
+		ErrorStackTrace stackTrace = new ErrorStackTrace(accsException);
+		causes.add(exceptionCode.getMessage());
+		causes.add(accsException.getMessage());
+		errorStacks.add(stackTrace.getErrorStack());
+		
+		ErrorInfo errorInfo = new ErrorInfo(exceptionCode.getId(), causes, requestCorelationId, errorStacks);
+		log.error(errorInfo.toString());
+		writeErrorReponse(request, response,errorInfo);
+	}
+	
+	private void writeErrorReponse(HttpServletRequest request, HttpServletResponse response,
+			ErrorInfo errorInfo) throws IOException {
+		response.setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
+		response.setHeader(SysConstant.SYS_REQ_CORR_ID_HEADER,request.getHeader(SysConstant.SYS_REQ_CORR_ID_HEADER));
+		response.getWriter().print(toJson(errorInfo));
+	}
+	
+	private String toJson(ErrorInfo errorInfo) {
+		ObjectMapper mapper = new ObjectMapper();
+		try {
+			return mapper.writeValueAsString(errorInfo);
+		} catch (JsonProcessingException e) {
+			// Do nothing
+			return errorInfo.getCauses().toString();
+		}
+	}
 }
