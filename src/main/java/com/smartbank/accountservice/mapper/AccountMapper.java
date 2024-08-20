@@ -1,5 +1,7 @@
 package com.smartbank.accountservice.mapper;
 
+import java.math.BigDecimal;
+
 import com.smartbank.accountservice.dto.CustomerAccountDTO;
 import com.smartbank.accountservice.entity.Account;
 import com.smartbank.accountservice.entity.Customer;
@@ -21,6 +23,7 @@ public class AccountMapper {
 		account.setAccountType(customerDto.getAccountType());
 		account.setBranchCode(customerDto.getBranchCode());
 		account.setCustomer(customer);
+		account.setCurrentBalance(customerDto.getAmount() == null ? BigDecimal.ZERO : customerDto.getAmount());
 		return account;
 	}
 }

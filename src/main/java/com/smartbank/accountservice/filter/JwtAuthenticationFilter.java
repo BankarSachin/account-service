@@ -101,16 +101,22 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter{
 	    return Optional.empty();
 	}
 	
+	/**
+	 * Remove all non number charaters from account number
+	 * @param accountNumber 
+	 * @return
+	 */
 	private String sanitizeAccountNumber(String accountNumber) {
 		return accountNumber.replaceAll("[^0-9]", "");
 	}
 
-	 /**
-	 * Do not execute this filter for authenticate endpoint
+	/**
+	 * Decides if Filter is to be called or not Return true if no need to Filter request
+	 * @return true if no need to execute filter.
 	 */
 	@Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
-        return request.getServletPath().equals("/v1/customer/authenticate");
+		return List.of("/v1/customer/authenticate","/v1/customer/register").contains(request.getServletPath());
     }
 
 }

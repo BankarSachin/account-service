@@ -1,7 +1,10 @@
 package com.smartbank.accountservice.dto;
 
+import java.math.BigDecimal;
+
 import com.smartbank.accountservice.enums.AccountType;
 
+import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -40,4 +43,7 @@ public class CustomerAccountDTO {
 	@NotNull(message = "Branch Code type is required")
 	@Pattern(regexp = "^[A-Za-z]{4}[0-9]{7}$",message = "Branch code should be 11 digit long and Alphanumeric")
 	private String branchCode;
+	
+	@Digits(integer = 10, fraction = 2, message = "Please enter a valid amount with up to 10 digits before the decimal and up to 2 digits after the decimal.")
+	private BigDecimal amount;
 }

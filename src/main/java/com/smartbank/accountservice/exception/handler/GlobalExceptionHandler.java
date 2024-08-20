@@ -7,6 +7,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
@@ -60,6 +61,22 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler{
 		return handleExceptionInternal(ex, errorInfo, headers, HttpStatus.BAD_REQUEST, request);
 	}
 	
+	/**
+	 *Handle all Validations Errors
+	 */
+	@Override
+	protected ResponseEntity<Object> handleHttpMessageNotReadable(
+			HttpMessageNotReadableException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
+		List<String> errors = new ArrayList<>();
+		ExceptionCode exceptionCode = ExceptionCode.ACCS_INVALID_INPUT;
+		errors.add(ex.getMessage());
+		final String requestCorelationId = request.getHeader(SysConstant.SYS_REQ_CORR_ID_HEADER);
+		
+		ErrorInfo errorInfo = new ErrorInfo(exceptionCode.getId(),errors,requestCorelationId,null);
+		log.error(errorInfo.toString());
+		return handleExceptionInternal(ex, errorInfo, headers, HttpStatus.BAD_REQUEST, request);
+	}
+		
 	/**
 	 * Catch {@link AccsException} and Respond back with standardized error message
 	 * @param ex {@link AccsException}
