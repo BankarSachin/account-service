@@ -38,7 +38,7 @@ public class AccountController {
 												   @Valid @RequestBody TransactionRequest transactionRequest) throws AccsException {
 			final String methodName = "deposit";
 			log.info("{} - Deposit request received for {} account", methodName,accountNumber);
-			final DepositResponse depositResponse = accountService.deposit(accountNumber, transactionRequest);
+			final DepositResponse depositResponse = accountService.deposit(headers,accountNumber, transactionRequest);
 			log.info("{} - Amount {} deposited to {} account", methodName,transactionRequest.getTransactionAmount(),accountNumber);
 			return ResponseEntity
 					.status(HttpStatus.OK)
@@ -52,7 +52,7 @@ public class AccountController {
 			   											@Valid @RequestBody TransactionRequest transactionRequest) throws AccsException {
 			final String methodName = "withdrawal";
 			log.info("{} - Withdrawal request received for {} account", methodName,accountNumber);
-			final WithdrawalResponse withdrawalResponse = accountService.withdrawal(accountNumber, transactionRequest);
+			final WithdrawalResponse withdrawalResponse = accountService.withdrawal(headers,accountNumber, transactionRequest);
 			log.info("{} - Amount {} deposited to {} account", methodName,transactionRequest.getTransactionAmount(),accountNumber);
 			return ResponseEntity
 						.status(HttpStatus.OK)

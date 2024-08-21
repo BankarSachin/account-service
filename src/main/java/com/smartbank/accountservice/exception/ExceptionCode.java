@@ -71,9 +71,14 @@ public class ExceptionCode implements Serializable{
 	//Server Error Series
 	public static final ExceptionCode ACCS_UNKNOWN_EXCEPTION = new ExceptionCode("ACCS5001", "ACCS_UNKNOWN_EXCEPTION", "An unexcepted exception occured",HttpStatus.INTERNAL_SERVER_ERROR);
 	public static final ExceptionCode ACC_CUSTOMER_NON_EXIST = new ExceptionCode("ACCS5002", "ACC_CUSTOMER_NON_EXIST", "Customer does not exists",HttpStatus.INTERNAL_SERVER_ERROR);
-	public static final ExceptionCode ACCS_DB_EXCEPTION = new ExceptionCode("ACCS5002", "ACCS_DB_EXCEPTION", "Database level exception ocurred",HttpStatus.INTERNAL_SERVER_ERROR);
-	
-	
+	public static final ExceptionCode ACCS_DB_EXCEPTION = new ExceptionCode("ACCS5003", "ACCS_DB_EXCEPTION", "Database level exception ocurred",HttpStatus.INTERNAL_SERVER_ERROR);
+	public static final ExceptionCode ACCS_TXN_SERVICE_EXCEPTION = new ExceptionCode("ACCS5004", "ACCS_TXN_SERVICE_EXCEPTION", "Error {0}:{1} Received from transaction service. ", HttpStatus.INTERNAL_SERVER_ERROR);
+	public static final ExceptionCode ACCS_TXN_SERVICE_EMPTY_RESPONSE = new ExceptionCode("ACCS5005", "ACCS_TXN_SERVICE_EMPTY_RESPONSE", "Empty response from transaction service", HttpStatus.INTERNAL_SERVER_ERROR);
+	public static final ExceptionCode ACC_ACCOUNT_NON_EXIST = new ExceptionCode("ACCS5006", "ACC_ACCOUNT_NON_EXIST", "Account does not exists",HttpStatus.INTERNAL_SERVER_ERROR);
+	public static final ExceptionCode ACC_ACCOUNT_STATUS_INVALID = new ExceptionCode("ACCS5007", "ACC_ACCOUNT_STATUS_INVALID", "Account is closed or suspended",HttpStatus.INTERNAL_SERVER_ERROR);
+	public static final ExceptionCode ACC_ACCOUNT_DEPOSIT_UNKNOWN_EXCEPTION = new ExceptionCode("ACCS5008", "ACC_ACCOUNT_DEPOSIT_UNKNOWN_EXCEPTION", "Unknown Exception occured during depost. Transaction failed.",HttpStatus.INTERNAL_SERVER_ERROR);
+	public static final ExceptionCode ACC_ACCOUNT_WITHDRAWAL_UNKNOWN_EXCEPTION = new ExceptionCode("ACCS5009", "ACC_ACCOUNT_WITHDRAWAL_UNKNOWN_EXCEPTION", "Unknown Exception occured during withdrawal. Transaction failed.",HttpStatus.INTERNAL_SERVER_ERROR);
+	public static final ExceptionCode  ACCS_INSUFFICIENT_BALANCE_EXCEPTION	= new ExceptionCode("ACCS5010", "ACCS_INSUFFICIENT_BALANCE_EXCEPTION", "Debit account has insuffitient balance. Transaction failed.",HttpStatus.INTERNAL_SERVER_ERROR);
 	
 	//Client Input Error Series 
 	public static final ExceptionCode ACCS_INVALID_INPUT = new ExceptionCode("ACCS4001", "ACCS_INVALID_INPUT", "Missing or invalid request parameters",HttpStatus.BAD_REQUEST);

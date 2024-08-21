@@ -1,5 +1,7 @@
 package com.smartbank.accountservice.service;
 
+import java.util.Map;
+
 import com.smartbank.accountservice.dto.BalanceReponse;
 import com.smartbank.accountservice.dto.CustomerAccountDTO;
 import com.smartbank.accountservice.dto.DepositResponse;
@@ -26,7 +28,7 @@ public interface AccountService {
 	 * @return
 	 * @throws AccsException
 	 */
-	public DepositResponse deposit(String accounNumber,TransactionRequest transactionRequest) throws AccsException;
+	public DepositResponse deposit(Map<String, String> headers,String accounNumber,TransactionRequest transactionRequest) throws AccsException;
 	
 	
 	/**
@@ -36,7 +38,7 @@ public interface AccountService {
 	 * @return
 	 * @throws AccsException
 	 */
-	public WithdrawalResponse withdrawal(String accounNumber,TransactionRequest transactionRequest) throws AccsException;
+	public WithdrawalResponse withdrawal(Map<String, String> headers,String accounNumber,TransactionRequest transactionRequest) throws AccsException;
 	
 	/**
 	 * Gives Back Current Balance 
