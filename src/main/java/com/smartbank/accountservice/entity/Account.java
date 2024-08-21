@@ -21,6 +21,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
+import jakarta.persistence.Version;
 import lombok.Data;
 
 /**
@@ -68,4 +69,8 @@ public class Account {
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "updated_date", nullable = false)
 	private LocalDateTime updateddDate;
+	
+	@Version
+	@Column(name = "lock")
+	private Integer version;
 }
