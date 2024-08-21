@@ -27,7 +27,7 @@ import lombok.Data;
 /**
  * Holds Account Information
  * <p>
- * For simplicity we are having one to to one mapping between {@link Account} and {@link Customer}
+ * One customer can have multiple accounts 
  * @author Sachin
  */
 @Entity
