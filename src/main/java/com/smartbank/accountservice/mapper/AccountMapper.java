@@ -2,10 +2,13 @@ package com.smartbank.accountservice.mapper;
 
 import java.math.BigDecimal;
 
+import com.smartbank.accountservice.dto.AccountTransaction;
 import com.smartbank.accountservice.dto.CustomerAccountDTO;
+import com.smartbank.accountservice.dto.TransactionRequest;
 import com.smartbank.accountservice.entity.Account;
 import com.smartbank.accountservice.entity.Customer;
 import com.smartbank.accountservice.enums.AccountStatus;
+import com.smartbank.accountservice.enums.TransactionType;
 
 public class AccountMapper {
 	
@@ -25,5 +28,23 @@ public class AccountMapper {
 		account.setCustomer(customer);
 		account.setCurrentBalance(customerDto.getAmount() == null ? BigDecimal.ZERO : customerDto.getAmount());
 		return account;
+	}
+	
+	/**
+	 * Create entity for Ledger Entry or Transaction Entry
+	 * @param account
+	 * @param accountTransaction
+	 * @param transactionType
+	 * @return
+	 */
+	public static TransactionRequest toTxnEntity(Account account,AccountTransaction accountTransaction,TransactionType transactionType) {
+		TransactionRequest transactionRequest = new TransactionRequest();
+		transactionRequest.setAccountNumber(account.getAccountNumber());
+		transactionRequest.setTransactionAmount(accountTransaction.getTransactionAmount());
+		transactionRequest.setClosingBalance(account.getCurrentBalance());
+		transactionRequest.setTransactionSummary(accountTransaction.getTransactionSummary());
+		transactionRequest.setTransactionDate(account.getUpdateddDate());
+		transactionRequest.setTransactionType(transactionType);
+		return transactionRequest;
 	}
 }

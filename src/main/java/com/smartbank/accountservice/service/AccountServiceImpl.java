@@ -3,7 +3,9 @@
  */
 package com.smartbank.accountservice.service;
 
-import static com.smartbank.accountservice.mapper.ReponseMappers.*;
+import static com.smartbank.accountservice.mapper.AccountMapper.toTxnEntity;
+import static com.smartbank.accountservice.mapper.ReponseMappers.txnToDepositRespMapper;
+import static com.smartbank.accountservice.mapper.ReponseMappers.txnToWithdrawalRespMapper;
 
 import java.math.BigDecimal;
 import java.util.Map;
@@ -11,15 +13,16 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.smartbank.accountservice.dto.AccountTransaction;
 import com.smartbank.accountservice.dto.BalanceReponse;
 import com.smartbank.accountservice.dto.CustomerAccountDTO;
 import com.smartbank.accountservice.dto.DepositResponse;
-import com.smartbank.accountservice.dto.TransactionRequest;
 import com.smartbank.accountservice.dto.TransactionResponse;
 import com.smartbank.accountservice.dto.WithdrawalResponse;
 import com.smartbank.accountservice.entity.Account;
 import com.smartbank.accountservice.entity.Customer;
 import com.smartbank.accountservice.enums.AccountStatus;
+import com.smartbank.accountservice.enums.TransactionType;
 import com.smartbank.accountservice.exception.AccsException;
 import com.smartbank.accountservice.exception.ExceptionCode;
 import com.smartbank.accountservice.mapper.AccountMapper;
@@ -85,7 +88,7 @@ public class AccountServiceImpl implements AccountService {
 
 	@Override
 	@Transactional
-	public DepositResponse deposit(Map<String, String> headers,String accounNumber, TransactionRequest transactionRequest) throws AccsException {
+	public DepositResponse deposit(Map<String, String> headers,String accounNumber, AccountTransaction accountTransaction) throws AccsException {
 		final String methodName = "deposit";
 		try {
 			
@@ -94,12 +97,15 @@ public class AccountServiceImpl implements AccountService {
 			if (account.getAccountStatus()!=AccountStatus.ACTIVE) {
 				throw new AccsException(ExceptionCode.ACC_ACCOUNT_STATUS_INVALID);
 			}
-			final BigDecimal newBalance = account.getCurrentBalance().add(transactionRequest.getTransactionAmount());
+			final BigDecimal newBalance = account.getCurrentBalance().add(accountTransaction.getTransactionAmount());
 			account.setCurrentBalance(newBalance);
 			account = accountRepository.save(account);
 			
-			transactionRequest.setClosingBalance(account.getCurrentBalance());
-			TransactionResponse transactionResponse =  transactionServiceClient.crateTxnEntry(headers, accounNumber, transactionRequest);
+			//Commit Transaction
+			TransactionResponse transactionResponse =  transactionServiceClient.crateTxnEntry(headers, 
+																							  accounNumber, 
+																							  toTxnEntity(account, accountTransaction, TransactionType.CREDIT)
+																							  );
 			log.info("{} - Deposit successful for {}. UTR number {}",methodName,accounNumber, transactionResponse.getUtrNumber());
 			return txnToDepositRespMapper.apply(transactionResponse);
 			
@@ -116,7 +122,7 @@ public class AccountServiceImpl implements AccountService {
 
 	@Override
 	@Transactional
-	public WithdrawalResponse withdrawal(Map<String, String> headers,String accounNumber, TransactionRequest transactionRequest) throws AccsException {
+	public WithdrawalResponse withdrawal(Map<String, String> headers,String accounNumber, AccountTransaction accountTransaction) throws AccsException {
 		final String methodName = "withdrawal";
 		try {
 			
@@ -129,16 +135,18 @@ public class AccountServiceImpl implements AccountService {
 			final BigDecimal currentBalance = account.getCurrentBalance();
 			
 			//It won't change current balanec. BigDecimal is immutable one like String
-			if(currentBalance.compareTo(currentBalance.subtract(transactionRequest.getTransactionAmount()))< 0) {
+			if(currentBalance.compareTo(currentBalance.subtract(accountTransaction.getTransactionAmount()))< 0) {
 				throw new AccsException(ExceptionCode.ACCS_INSUFFICIENT_BALANCE_EXCEPTION);
 			}
 
-			final BigDecimal newBalance = account.getCurrentBalance().subtract(transactionRequest.getTransactionAmount());
+			final BigDecimal newBalance = account.getCurrentBalance().subtract(accountTransaction.getTransactionAmount());
 			account.setCurrentBalance(newBalance);
 			account = accountRepository.save(account);
 			
-			transactionRequest.setClosingBalance(account.getCurrentBalance());
-			TransactionResponse transactionResponse =  transactionServiceClient.crateTxnEntry(headers, accounNumber, transactionRequest);
+			TransactionResponse transactionResponse =  transactionServiceClient.crateTxnEntry(headers, 
+					                                                                          accounNumber, 
+					                                                                          toTxnEntity(account, accountTransaction, TransactionType.DEBIT)
+					                                                                          );
 			log.info("{} - Deposit successful for {}. UTR number {}",methodName,accounNumber, transactionResponse.getUtrNumber());
 			return txnToWithdrawalRespMapper.apply(transactionResponse);
 			

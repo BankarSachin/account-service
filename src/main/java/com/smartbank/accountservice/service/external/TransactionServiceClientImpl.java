@@ -19,7 +19,6 @@ import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import com.google.gson.Gson;
-import com.smartbank.accountservice.constant.SysConstant;
 import com.smartbank.accountservice.dto.TransactionRequest;
 import com.smartbank.accountservice.dto.TransactionResponse;
 import com.smartbank.accountservice.exception.AccsException;
@@ -45,10 +44,12 @@ public class TransactionServiceClientImpl implements TransactionServiceClient {
 		final String methodName = "crateTxnEntry";
 		try {
 			HttpHeaders txnHeaders = new HttpHeaders();
+			
+			for (Map.Entry<String, String> entry : headers.entrySet()) {
+				txnHeaders.add(entry.getKey(), entry.getValue());
+	        }
 			txnHeaders.add(HttpHeaders.USER_AGENT, "account-service");
-			txnHeaders.add(HttpHeaders.AUTHORIZATION, headers.get(HttpHeaders.AUTHORIZATION));
-			txnHeaders.add(SysConstant.SYS_REQ_CORR_ID_HEADER, headers.get(SysConstant.SYS_REQ_CORR_ID_HEADER));
-
+			
 			HttpEntity<TransactionRequest> httpEntity = new HttpEntity<>(transactionRequest, txnHeaders);
 
 			UriComponents uriComponents = UriComponentsBuilder.fromPath(txnEntryPath).buildAndExpand(accountNumber);
