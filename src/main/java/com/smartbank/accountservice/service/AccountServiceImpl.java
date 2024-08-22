@@ -24,6 +24,7 @@ import com.smartbank.accountservice.exception.AccsException;
 import com.smartbank.accountservice.exception.ExceptionCode;
 import com.smartbank.accountservice.mapper.AccountMapper;
 import com.smartbank.accountservice.repository.AccountRepository;
+import com.smartbank.accountservice.service.external.TransactionServiceClient;
 
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
@@ -114,6 +115,7 @@ public class AccountServiceImpl implements AccountService {
 
 
 	@Override
+	@Transactional
 	public WithdrawalResponse withdrawal(Map<String, String> headers,String accounNumber, TransactionRequest transactionRequest) throws AccsException {
 		final String methodName = "withdrawal";
 		try {
@@ -124,26 +126,30 @@ public class AccountServiceImpl implements AccountService {
 				throw new AccsException(ExceptionCode.ACC_ACCOUNT_STATUS_INVALID);
 			}
 			
-			if(account.getCurrentBalance() < account.getCurrentBalance().subtract(transactionRequest.getTransactionAmount()) {
-				throw new AccsException(ExceptionCode.ACC_ACCOUNT_STATUS_INVALID);
+			final BigDecimal currentBalance = account.getCurrentBalance();
+			
+			//It won't change current balanec. BigDecimal is immutable one like String
+			if(currentBalance.compareTo(currentBalance.subtract(transactionRequest.getTransactionAmount()))< 0) {
+				throw new AccsException(ExceptionCode.ACCS_INSUFFICIENT_BALANCE_EXCEPTION);
 			}
 
-			final BigDecimal newBalance = account.getCurrentBalance().add(transactionRequest.getTransactionAmount());
+			final BigDecimal newBalance = account.getCurrentBalance().subtract(transactionRequest.getTransactionAmount());
 			account.setCurrentBalance(newBalance);
 			account = accountRepository.save(account);
 			
 			transactionRequest.setClosingBalance(account.getCurrentBalance());
 			TransactionResponse transactionResponse =  transactionServiceClient.crateTxnEntry(headers, accounNumber, transactionRequest);
 			log.info("{} - Deposit successful for {}. UTR number {}",methodName,accounNumber, transactionResponse.getUtrNumber());
-			return txnToDepositRespMapper.apply(transactionResponse);
+			return txnToWithdrawalRespMapper.apply(transactionResponse);
 			
 		} catch (AccsException e) {
-			log.error("{} - Error occured while deposit flow {}", methodName,e.getMessage());
+			log.error("{} - Error occured while withdrawal flow {}", methodName,e.getMessage());
 			throw e;
-			//In Real banking application there would be revoke transaction call here
+			//In Real banking application there would be revoke transaction call here .
+			//Compensating Transaction call would go here
 		} catch (Exception e) {
-			log.error("{} - Error occured while deposit flow {}", methodName,e.getMessage(),e);
-			throw new AccsException(ExceptionCode.ACC_ACCOUNT_DEPOSIT_UNKNOWN_EXCEPTION, e);
+			log.error("{} - Error occured while withdrawal flow {}", methodName,e.getMessage(),e);
+			throw new AccsException(ExceptionCode.ACC_ACCOUNT_WITHDRAWAL_UNKNOWN_EXCEPTION, e);
 		}
 	}
 

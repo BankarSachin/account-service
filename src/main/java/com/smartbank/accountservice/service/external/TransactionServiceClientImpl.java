@@ -1,4 +1,4 @@
-package com.smartbank.accountservice.service;
+package com.smartbank.accountservice.service.external;
 
 import java.util.Map;
 
