@@ -39,12 +39,11 @@ public class AccountMapper {
 	 */
 	public static TransactionRequest toTxnEntity(Account account,AccountTransaction accountTransaction,TransactionType transactionType) {
 		TransactionRequest transactionRequest = new TransactionRequest();
-		transactionRequest.setAccountNumber(account.getAccountNumber());
 		transactionRequest.setTransactionAmount(accountTransaction.getTransactionAmount());
 		transactionRequest.setClosingBalance(account.getCurrentBalance());
 		transactionRequest.setTransactionSummary(accountTransaction.getTransactionSummary());
-		transactionRequest.setTransactionDate(account.getUpdateddDate());
 		transactionRequest.setTransactionType(transactionType);
+		transactionRequest.setTransactionDate(account.getUpdateddDate());
 		return transactionRequest;
 	}
 }

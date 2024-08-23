@@ -89,6 +89,9 @@ public class AccountServiceImpl implements AccountService {
 	/**
 	 *By Default transaction rollbacks on Runtime and Error. Adding these two would make it rollback for 4 conditions
 	 * AccsException,Exception and Default ones
+	 *
+	 * There is one drawback when supposse transaction has been commited 
+	 *
 	 */
 	@Override
 	@Transactional(rollbackOn = {AccsException.class,Exception.class})
@@ -115,10 +118,11 @@ public class AccountServiceImpl implements AccountService {
 			
 		} catch (AccsException e) {
 			log.error("{} - Error occured while deposit flow {}", methodName,e.getMessage());
+			//call to transaction rollback - Asynch goes here
 			throw e;
-			//In Real banking application there would be revoke transaction call here
 		} catch (Exception e) {
 			log.error("{} - Error occured while deposit flow {}", methodName,e.getMessage(),e);
+			//call to transaction rollback - Asynch goes here
 			throw new AccsException(ExceptionCode.ACC_ACCOUNT_DEPOSIT_UNKNOWN_EXCEPTION, e);
 		}
 	}
@@ -157,21 +161,38 @@ public class AccountServiceImpl implements AccountService {
 		} catch (AccsException e) {
 			log.error("{} - Error occured while withdrawal flow {}", methodName,e.getMessage());
 			throw e;
-			//In Real banking application there would be revoke transaction call here .
-			//Compensating Transaction call would go here
+			//call to transaction entry rollback - Asynch goes here
 		} catch (Exception e) {
 			log.error("{} - Error occured while withdrawal flow {}", methodName,e.getMessage(),e);
+			//call to transaction entry rollback - Asynch goes here
 			throw new AccsException(ExceptionCode.ACC_ACCOUNT_WITHDRAWAL_UNKNOWN_EXCEPTION, e);
 		}
 	}
 
 
+	/**
+	 * CHeck balance of Account.
+	 * Exception for Inactive or suspended accounts
+	 */
 	@Override
 	public BalanceReponse balance(String accounNumber) throws AccsException {
-		/**
-		 * Get Current Balance
-		 * 
-		 * **/
-		return null;
+		final String methodName = "withdrawal";
+		try {
+			
+			Account account = accountRepository.findByAccountNumber(accounNumber).orElseThrow(()-> new AccsException(ExceptionCode.ACC_ACCOUNT_NON_EXIST));
+			
+			if (account.getAccountStatus()!=AccountStatus.ACTIVE) {
+				throw new AccsException(ExceptionCode.ACC_ACCOUNT_STATUS_INVALID);
+			}
+			
+			return new BalanceReponse(accounNumber,account.getCurrentBalance());
+			
+		} catch (AccsException e) {
+			log.error("{} - Error occured while balance check {}", methodName,e.getMessage());
+			throw e;
+		} catch (Exception e) {
+			log.error("{} - Error occured while balance check {}", methodName,e.getMessage(),e);
+			throw new AccsException(ExceptionCode.ACC_ACCOUNT_WITHDRAWAL_UNKNOWN_EXCEPTION, e);
+		}
 	}
 }

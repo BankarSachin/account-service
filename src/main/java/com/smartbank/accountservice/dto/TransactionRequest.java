@@ -2,9 +2,7 @@ package com.smartbank.accountservice.dto;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.UUID;
 
-import com.smartbank.accountservice.enums.TransactionStatus;
 import com.smartbank.accountservice.enums.TransactionType;
 
 import jakarta.validation.constraints.NotNull;
@@ -12,13 +10,6 @@ import lombok.Data;
 
 @Data
 public class TransactionRequest {
-	
-	private UUID utrNumber;
-	
-	private TransactionStatus transactionStatus;
-	
-	@NotNull(message = "Account number required for transaction entry")
-	private String accountNumber;
 	
 	@NotNull(message = "Transaction amount required for transaction entry")
 	private BigDecimal transactionAmount;
