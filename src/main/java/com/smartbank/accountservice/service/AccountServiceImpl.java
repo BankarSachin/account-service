@@ -86,8 +86,12 @@ public class AccountServiceImpl implements AccountService {
 	}
 
 
+	/**
+	 *By Default transaction rollbacks on Runtime and Error. Adding these two would make it rollback for 4 conditions
+	 * AccsException,Exception and Default ones
+	 */
 	@Override
-	@Transactional
+	@Transactional(rollbackOn = {AccsException.class,Exception.class})
 	public DepositResponse deposit(Map<String, String> headers,String accounNumber, AccountTransaction accountTransaction) throws AccsException {
 		final String methodName = "deposit";
 		try {
