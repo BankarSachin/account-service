@@ -143,7 +143,7 @@ public class AccountServiceImpl implements AccountService {
 			final BigDecimal currentBalance = account.getCurrentBalance();
 			
 			//It won't change current balanec. BigDecimal is immutable one like String
-			if(currentBalance.compareTo(currentBalance.subtract(accountTransaction.getTransactionAmount()))< 0) {
+			if(currentBalance.compareTo(accountTransaction.getTransactionAmount()) < 0) {
 				throw new AccsException(ExceptionCode.ACCS_INSUFFICIENT_BALANCE_EXCEPTION);
 			}
 
