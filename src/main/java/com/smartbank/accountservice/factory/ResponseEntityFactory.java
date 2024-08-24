@@ -1,5 +1,6 @@
 package com.smartbank.accountservice.factory;
 
+import org.apache.commons.text.StringEscapeUtils;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -24,15 +25,19 @@ public class ResponseEntityFactory {
 	public static ResponseEntity<Object> getErrorResponse(WebRequest request,ErrorInfo errorInfo,HttpStatus httpStatus){
 		return ResponseEntity
 				.status(httpStatus)
-				.header(SysConstant.SYS_REQ_CORR_ID_HEADER,request.getHeader(SysConstant.SYS_REQ_CORR_ID_HEADER))
+				.header(SysConstant.SYS_REQ_CORR_ID_HEADER,sanitize(request.getHeader(SysConstant.SYS_REQ_CORR_ID_HEADER)))
 				.header(HttpHeaders.CONTENT_TYPE,MediaType.APPLICATION_JSON_VALUE)
 				.body(errorInfo);
+	}
+
+	private static String sanitize(String requestCorelationId) {
+		return StringEscapeUtils.escapeHtml4(requestCorelationId);
 	}
 	
 	public static ResponseEntity<Object> getErrorResponse(HttpServletRequest request,ErrorInfo errorInfo,HttpStatus httpStatus){
 		return ResponseEntity
 				.status(httpStatus)
-				.header(SysConstant.SYS_REQ_CORR_ID_HEADER,request.getHeader(SysConstant.SYS_REQ_CORR_ID_HEADER))
+				.header(SysConstant.SYS_REQ_CORR_ID_HEADER,sanitize(request.getHeader(SysConstant.SYS_REQ_CORR_ID_HEADER)))
 				.header(HttpHeaders.CONTENT_TYPE,MediaType.APPLICATION_JSON_VALUE)
 				.body(errorInfo);
 	}

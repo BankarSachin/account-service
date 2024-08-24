@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import org.apache.commons.text.StringEscapeUtils;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -118,6 +119,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter{
 	 * @return
 	 */
 	private String sanitizeAccountNumber(String accountNumber) {
+		accountNumber = StringEscapeUtils.escapeHtml4(accountNumber);
 		return accountNumber.replaceAll("[^0-9]", "");
 	}
 
