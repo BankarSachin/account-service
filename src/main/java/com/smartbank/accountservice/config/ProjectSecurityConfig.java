@@ -39,7 +39,7 @@ public class ProjectSecurityConfig {
 	 /**
 	 * <p><b>SessionManagement</b> : Do not use Session Managment
 	 * <p><b>CORS</b> : Check configuration in {@link corsConfigurationSource} method
-	 * <p><b>CSRF</b> : Do not use Session Managment
+	 * <p><b>CSRF</b> : We do not use sessions as well as coockie for authentication purpose. Hence Cross Site Request Forgery is removed
 	 * <p><b>SessionManagement</b> : Do not use Session Managment
 	 * <p><b>SessionManagement</b> : Do not use Session Managment
 	 * <p><b>SessionManagement</b> : Do not use Session Managment
