@@ -9,6 +9,7 @@ import static com.smartbank.accountservice.mapper.ReponseMappers.txnToWithdrawal
 
 import java.math.BigDecimal;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,16 +18,20 @@ import com.smartbank.accountservice.dto.AccountTransaction;
 import com.smartbank.accountservice.dto.BalanceReponse;
 import com.smartbank.accountservice.dto.CustomerAccountDTO;
 import com.smartbank.accountservice.dto.DepositResponse;
+import com.smartbank.accountservice.dto.NotificationRequest;
+import com.smartbank.accountservice.dto.NotificationResponse;
 import com.smartbank.accountservice.dto.TransactionResponse;
 import com.smartbank.accountservice.dto.WithdrawalResponse;
 import com.smartbank.accountservice.entity.Account;
 import com.smartbank.accountservice.entity.Customer;
 import com.smartbank.accountservice.enums.AccountStatus;
+import com.smartbank.accountservice.enums.NotificationType;
 import com.smartbank.accountservice.enums.TransactionType;
 import com.smartbank.accountservice.exception.AccsException;
 import com.smartbank.accountservice.exception.ExceptionCode;
 import com.smartbank.accountservice.mapper.AccountMapper;
 import com.smartbank.accountservice.repository.AccountRepository;
+import com.smartbank.accountservice.service.external.NotificationServiceClient;
 import com.smartbank.accountservice.service.external.TransactionServiceClient;
 
 import jakarta.transaction.Transactional;
@@ -49,6 +54,10 @@ public class AccountServiceImpl implements AccountService {
 	
 	@Autowired
 	private TransactionServiceClient transactionServiceClient;
+	
+	
+	@Autowired
+	private NotificationServiceClient notificationServiceClient;
 	/**
 	 * Creates Customer
 	 * Creates Corresponding Account
@@ -114,6 +123,7 @@ public class AccountServiceImpl implements AccountService {
 																							  toTxnEntity(account, accountTransaction, TransactionType.CREDIT)
 																							  );
 			log.info("{} - Deposit successful for {}. UTR number {}",methodName,accounNumber, transactionResponse.getUtrNumber());
+			sendNotification(headers, transactionResponse, accounNumber, NotificationType.CREDIT);
 			return txnToDepositRespMapper.apply(transactionResponse);
 			
 		} catch (AccsException e) {
@@ -156,11 +166,13 @@ public class AccountServiceImpl implements AccountService {
 					                                                                          toTxnEntity(account, accountTransaction, TransactionType.DEBIT)
 					                                                                          );
 			log.info("{} - Deposit successful for {}. UTR number {}",methodName,accounNumber, transactionResponse.getUtrNumber());
+			sendNotification(headers, transactionResponse, accounNumber, NotificationType.DEBIT);
 			return txnToWithdrawalRespMapper.apply(transactionResponse);
 			
 		} catch (AccsException e) {
 			log.error("{} - Error occured while withdrawal flow {}", methodName,e.getMessage());
 			throw e;
+			
 			//call to transaction entry rollback - Asynch goes here
 		} catch (Exception e) {
 			log.error("{} - Error occured while withdrawal flow {}", methodName,e.getMessage(),e);
@@ -194,5 +206,30 @@ public class AccountServiceImpl implements AccountService {
 			log.error("{} - Error occured while balance check {}", methodName,e.getMessage(),e);
 			throw new AccsException(ExceptionCode.ACC_ACCOUNT_WITHDRAWAL_UNKNOWN_EXCEPTION, e);
 		}
+	}
+	
+	/**
+	 * Sent notification mail in Asynchronous fashion
+	 * @param transaction
+	 * @param debitAccount
+	 * @param creditAccount
+	 * @param transferRequest
+	 */
+	private void sendNotification(Map<String,String> headers,TransactionResponse transaction, String accountNumber,NotificationType notificationType) {
+		
+		NotificationRequest notificationRequest = NotificationRequest.builder()
+												  .notificationType(notificationType)
+												  .txnAmmount(transaction.getTransactionAmount())
+												  .txnDateTime(transaction.getTransactionDate())
+												  .currentBalance(transaction.getClosingBalance())
+												  .utrNumber(transaction.getUtrNumber())
+												  .build();
+												  
+		CompletableFuture<NotificationResponse> notificationFuture = notificationServiceClient.notifyTransfer(headers,accountNumber,notificationRequest);
+		String notificationResponse = notificationFuture
+										.thenApply(Object ::toString)
+										.exceptionally(e->e.getMessage())
+										.join();
+		log.info("sendNotification - account service received response from notificationservice {}", notificationResponse);
 	}
 }

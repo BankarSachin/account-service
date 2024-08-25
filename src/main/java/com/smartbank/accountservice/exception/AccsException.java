@@ -25,7 +25,7 @@ public class AccsException extends Exception{
 		this.errorStackTrace = new ErrorStackTrace(this);
 	}
 	
-	public AccsException(ExceptionCode exceptionCode,String[] codeArgs) {
+	public AccsException(ExceptionCode exceptionCode,String...codeArgs) {
 		super(exceptionCode.toString(codeArgs));
 		this.exceptionCode = exceptionCode;
 		this.codeArgs = codeArgs;

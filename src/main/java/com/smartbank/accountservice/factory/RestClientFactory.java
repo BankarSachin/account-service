@@ -17,43 +17,40 @@ import org.springframework.web.util.DefaultUriBuilderFactory;
 @Configuration
 public class RestClientFactory {
 
-	@Value("${transaction.service.base.url}")
-	private String txnServiceBaseUrl;
+	/*
+	 * @Value("${transaction.service.base.url}") private String txnServiceBaseUrl;
+	 * 
+	 * @Value("${transaction.service.base.url}") private String
+	 * notificationServiceBaseUrl;
+	 * 
+	 * @Bean(name = "txnServiceClient") public RestTemplate
+	 * txnServiceRestTemplate(RestTemplateBuilder builder) {
+	 * 
+	 * DefaultUriBuilderFactory uriBuilderFactory = new
+	 * DefaultUriBuilderFactory(txnServiceBaseUrl);
+	 * 
+	 * CloseableHttpClient httpClient = HttpClients.custom()
+	 * .setConnectionManager(customizedPoolingHttpClientConnectionManager())
+	 * .setDefaultRequestConfig(requestConfig()) .build();
+	 * 
+	 * return builder .uriTemplateHandler(uriBuilderFactory) .requestFactory(() ->
+	 * new HttpComponentsClientHttpRequestFactory(httpClient)) .build(); }
+	 */
 	
-	@Value("${transaction.service.base.url}")
-	private String notificationServiceBaseUrl;
-	
-	@Bean(name = "txnServiceClient")
-    public RestTemplate txnServiceRestTemplate(RestTemplateBuilder builder) {
-
-        DefaultUriBuilderFactory uriBuilderFactory = new DefaultUriBuilderFactory(txnServiceBaseUrl);
-
-        CloseableHttpClient httpClient = HttpClients.custom()
-                .setConnectionManager(customizedPoolingHttpClientConnectionManager())
-                .setDefaultRequestConfig(requestConfig())
-                .build();
-
-        return builder
-        		.uriTemplateHandler(uriBuilderFactory)
-                .requestFactory(() -> new HttpComponentsClientHttpRequestFactory(httpClient))
-                .build();
-    }
-	
-	@Bean(name = "notificationServiceClient")
-    public RestTemplate notificationServiceRestTemplate(RestTemplateBuilder builder) {
-
-		DefaultUriBuilderFactory uriBuilderFactory = new DefaultUriBuilderFactory(notificationServiceBaseUrl);
-
-        CloseableHttpClient httpClient = HttpClients.custom()
-                .setConnectionManager(customizedPoolingHttpClientConnectionManager())
-                .setDefaultRequestConfig(requestConfig())
-                .build();
-
-        return builder
-        		.uriTemplateHandler(uriBuilderFactory)
-                .requestFactory(() -> new HttpComponentsClientHttpRequestFactory(httpClient))
-                .build();
-    }
+	/*
+	 * @Bean(name = "notificationServiceClient") public RestTemplate
+	 * notificationServiceRestTemplate(RestTemplateBuilder builder) {
+	 * 
+	 * DefaultUriBuilderFactory uriBuilderFactory = new
+	 * DefaultUriBuilderFactory(notificationServiceBaseUrl);
+	 * 
+	 * CloseableHttpClient httpClient = HttpClients.custom()
+	 * .setConnectionManager(customizedPoolingHttpClientConnectionManager())
+	 * .setDefaultRequestConfig(requestConfig()) .build();
+	 * 
+	 * return builder .uriTemplateHandler(uriBuilderFactory) .requestFactory(() ->
+	 * new HttpComponentsClientHttpRequestFactory(httpClient)) .build(); }
+	 */
 
 	@Bean
 	public RequestConfig requestConfig() {
