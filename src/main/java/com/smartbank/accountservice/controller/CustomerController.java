@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.smartbank.accountservice.constant.SysConstant;
 import com.smartbank.accountservice.dto.CustomerAccountDTO;
 import com.smartbank.accountservice.dto.TokenResponse;
 import com.smartbank.accountservice.exception.AccsException;
@@ -44,6 +45,7 @@ public class CustomerController {
 			log.info("{} - Customer registered successfully with zero balance Account for {}", methodName,registrationResponse.getEmail());
 			return ResponseEntity
 					.status(HttpStatus.CREATED)
+					.header(SysConstant.SYS_REQ_CORR_ID_HEADER, headers.get(SysConstant.SYS_REQ_CORR_ID_HEADER.toLowerCase()))
 					.body(registrationResponse);
 	}
 	
@@ -54,13 +56,14 @@ public class CustomerController {
      * @throws AccsException
      */
     @PostMapping("/customer/authenticate")
-    public ResponseEntity<TokenResponse> authenticate()
+    public ResponseEntity<TokenResponse> authenticate(@RequestHeader Map<String, String> headers)
             throws AccsException {
     	
     	Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
     	final TokenResponse tokenResponse = tokenService.generateToken(authentication.getName(),authentication.getAuthorities());
 		return ResponseEntity
 				.status(HttpStatus.OK)
+				.header(SysConstant.SYS_REQ_CORR_ID_HEADER, headers.get(SysConstant.SYS_REQ_CORR_ID_HEADER.toLowerCase()))
 				.body(tokenResponse);
     }
 }

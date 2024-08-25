@@ -55,7 +55,6 @@ public class AccountServiceImpl implements AccountService {
 	@Autowired
 	private TransactionServiceClient transactionServiceClient;
 	
-	
 	@Autowired
 	private NotificationServiceClient notificationServiceClient;
 	/**

@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.smartbank.accountservice.constant.SysConstant;
 import com.smartbank.accountservice.dto.AccountTransaction;
 import com.smartbank.accountservice.dto.BalanceReponse;
 import com.smartbank.accountservice.dto.DepositResponse;
@@ -42,6 +43,7 @@ public class AccountController {
 			log.info("{} - Amount {} deposited to {} account", methodName,accountTransaction.getTransactionAmount(),accountNumber);
 			return ResponseEntity
 					.status(HttpStatus.OK)
+					.header(SysConstant.SYS_REQ_CORR_ID_HEADER, headers.get(SysConstant.SYS_REQ_CORR_ID_HEADER.toLowerCase()))
 					.body(depositResponse);
 	}
 	
@@ -56,6 +58,7 @@ public class AccountController {
 			log.info("{} - Amount {} deposited to {} account", methodName,accountTransaction.getTransactionAmount(),accountNumber);
 			return ResponseEntity
 						.status(HttpStatus.OK)
+						.header(SysConstant.SYS_REQ_CORR_ID_HEADER, headers.get(SysConstant.SYS_REQ_CORR_ID_HEADER.toLowerCase()))
 						.body(withdrawalResponse);
 }
 	
@@ -69,6 +72,7 @@ public class AccountController {
 			log.info("{} - Successfully fetched balance amount for {} account", methodName,accountNumber);
 			return ResponseEntity
 					.status(HttpStatus.OK)
+					.header(SysConstant.SYS_REQ_CORR_ID_HEADER, headers.get(SysConstant.SYS_REQ_CORR_ID_HEADER.toLowerCase()))
 					.body(balanceReponse);
 	}
 
