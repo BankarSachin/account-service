@@ -85,7 +85,7 @@ public class ProjectSecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
 		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(List.of("http://localhost:8080","http://localhost:8084","http://localhost:8086","http://localhost:8088")); 
+        config.setAllowedOrigins(Collections.singletonList("http://localhost")); 
         config.setAllowedMethods(List.of("GET", "POST", "PUT","OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
         config.setAllowedHeaders(Collections.singletonList("*"));
