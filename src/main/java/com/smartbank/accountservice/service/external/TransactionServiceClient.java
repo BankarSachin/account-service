@@ -12,7 +12,6 @@ import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestClientException;
 
 import com.google.gson.Gson;
-import com.smartbank.accountservice.client.external.TransactionService;
 import com.smartbank.accountservice.constant.SysConstant;
 import com.smartbank.accountservice.dto.TransactionRequest;
 import com.smartbank.accountservice.dto.TransactionResponse;

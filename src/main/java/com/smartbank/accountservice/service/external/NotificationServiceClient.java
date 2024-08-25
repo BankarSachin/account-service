@@ -3,7 +3,6 @@ package com.smartbank.accountservice.service.external;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -15,7 +14,6 @@ import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestClientException;
 
 import com.google.gson.Gson;
-import com.smartbank.accountservice.client.external.NotificationService;
 import com.smartbank.accountservice.constant.SysConstant;
 import com.smartbank.accountservice.dto.NotificationRequest;
 import com.smartbank.accountservice.dto.NotificationResponse;
@@ -34,7 +32,6 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class NotificationServiceClient{
 
-	@Autowired
 	private final NotificationService notificationService;
 
 	/**

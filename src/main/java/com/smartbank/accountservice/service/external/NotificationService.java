@@ -1,4 +1,4 @@
-package com.smartbank.accountservice.client.external;
+package com.smartbank.accountservice.service.external;
 
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.HttpHeaders;
