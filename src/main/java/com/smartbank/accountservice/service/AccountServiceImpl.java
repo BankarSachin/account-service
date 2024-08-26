@@ -57,6 +57,7 @@ public class AccountServiceImpl implements AccountService {
 	
 	@Autowired
 	private NotificationServiceClient notificationServiceClient;
+	
 	/**
 	 * Creates Customer
 	 * Creates Corresponding Account
@@ -65,8 +66,6 @@ public class AccountServiceImpl implements AccountService {
 	 * 1> Register customer
 	 * 2> User Log into system and sends request to create account
 	 * @throws AccsException 
-	 * 
-	 * 
 	 */
 	@Override
 	@Transactional
