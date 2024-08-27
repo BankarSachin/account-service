@@ -9,8 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.smartbank.accountservice.dto.CustomerAccountDTO;
-import com.smartbank.accountservice.dto.LoginRequest;
-import com.smartbank.accountservice.dto.TokenResponse;
 import com.smartbank.accountservice.entity.Account;
 import com.smartbank.accountservice.entity.Customer;
 import com.smartbank.accountservice.exception.AccsException;
@@ -78,10 +76,5 @@ public class CustomerServiceImpl implements CustomerService{
 	@Override
 	public boolean doesCustomerExistsByPhoneNumber(String phoneNumber) {
 		return customerRepository.existsByPhoneNumber(phoneNumber);
-	}
-
-	@Override
-	public TokenResponse authenticate(LoginRequest loginrequest) throws AccsException {
-		return null;
 	}
 }
