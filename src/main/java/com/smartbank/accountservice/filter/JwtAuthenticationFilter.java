@@ -80,6 +80,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter{
              final String customerid =  claims.getSubject();
              final String permissions = (String) claims.get("permissions");
              
+             //WHy AUthorization : SUppose malacious user got hold of JWT token and your account number,He sends request . Since it is valid JWT token it would get passed through
+             // But ideally it should not happen.
              Optional<String> accountNumberOptional = extractAccountNumberFromPathParams(request);
              String accountNumber = accountNumberOptional.orElseThrow(()->new AccsException(ExceptionCode.ACCS_INVALID_INPUT));
              accountNumber = sanitizeAccountNumber(accountNumber);

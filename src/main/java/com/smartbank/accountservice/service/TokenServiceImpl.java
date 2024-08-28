@@ -20,10 +20,12 @@ import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.SignatureException;
 import io.jsonwebtoken.UnsupportedJwtException;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Slf4j
+@Getter
 public class TokenServiceImpl implements TokenService{
 
     @Value("${jwt.secret}")
@@ -35,20 +37,23 @@ public class TokenServiceImpl implements TokenService{
 	@Override
 	public Claims validateToken(String token) throws AccsException {
 		try {
-            return Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody();
+            return Jwts.parser().setSigningKey(getSecret()).parseClaimsJws(token).getBody();
         } catch (ExpiredJwtException e) {
-            throw new AccsException(ExceptionCode.ACCS_JWT_ERROR,new String[] {ApiMessages.JWT_TOKEN_EXPIRED_ERROR.getMessage()});
+            throw new AccsException(ExceptionCode.ACCS_JWT_ERROR,ApiMessages.JWT_TOKEN_EXPIRED_ERROR.getMessage());
         } catch (UnsupportedJwtException e) {
-        	 throw new AccsException(ExceptionCode.ACCS_JWT_ERROR,new String[] {ApiMessages.JWT_TOKEN_UNSUPPORTED_ERROR.getMessage()});
+        	 throw new AccsException(ExceptionCode.ACCS_JWT_ERROR,ApiMessages.JWT_TOKEN_UNSUPPORTED_ERROR.getMessage());
         } catch (MalformedJwtException e) {
-        	 throw new AccsException(ExceptionCode.ACCS_JWT_ERROR,new String[] {ApiMessages.JWT_TOKEN_MALFORMED_ERROR.getMessage()});
+        	 throw new AccsException(ExceptionCode.ACCS_JWT_ERROR,ApiMessages.JWT_TOKEN_MALFORMED_ERROR.getMessage());
         } catch (SignatureException e) {
-        	 throw new AccsException(ExceptionCode.ACCS_JWT_ERROR,new String[] {ApiMessages.JWT_TOKEN_INVALID_ERROR.getMessage()});
+        	 throw new AccsException(ExceptionCode.ACCS_JWT_ERROR,ApiMessages.JWT_TOKEN_INVALID_ERROR.getMessage());
         } catch (IllegalArgumentException e) {
-        	 throw new AccsException(ExceptionCode.ACCS_JWT_ERROR,new String[] {ApiMessages.JWT_TOKEN_EMPTY_ERROR.getMessage()});
+        	 throw new AccsException(ExceptionCode.ACCS_JWT_ERROR,ApiMessages.JWT_TOKEN_EMPTY_ERROR.getMessage());
         }
 	}
 
+	/**
+	 *Ideally RSA based JWT token should be generated. But for simplicity I have used SHA 512
+	 */
 	@Override
 	public TokenResponse generateToken(String name, Collection<? extends GrantedAuthority> authorities)
 			throws AccsException {
@@ -60,8 +65,8 @@ public class TokenServiceImpl implements TokenService{
 	            		.setSubject(name)
 	                    .claim("permissions", authorities.stream().map(GrantedAuthority :: getAuthority).collect(Collectors.joining(",")))
 	                    .setIssuedAt(new Date())
-	                    .setExpiration(new Date((new Date()).getTime() + expiration))
-	                    .signWith(SignatureAlgorithm.HS512, secret).compact();
+	                    .setExpiration(new Date((new Date()).getTime() + getExpiration()))
+	                    .signWith(SignatureAlgorithm.HS512, getSecret()).compact();
 	          return new TokenResponse(token);
 		} catch (Exception e) {
 			log.error("{} - Unknown error while generting token {}",methodName,e.getMessage());

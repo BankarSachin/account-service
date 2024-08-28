@@ -102,6 +102,16 @@
 		    <artifactId>commons-text</artifactId>
 		    <version>1.10.0</version>
 		</dependency>
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <scope>test</scope>
+        </dependency>
+		<dependency>
+		    <groupId>org.junit.platform</groupId>
+		    <artifactId>junit-platform-suite-engine</artifactId>
+		    <scope>test</scope>
+		</dependency>        		
 	</dependencies>
     <dependencyManagement>
         <dependencies>

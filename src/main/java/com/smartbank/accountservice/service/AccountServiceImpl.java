@@ -82,13 +82,17 @@ public class AccountServiceImpl implements AccountService {
 
 	
 	/**
-	 * Generates Account number which is Fixed Length
+	 * Generates Account number which is Fixed Length of 10
 	 * @param branchCode
 	 * @return
 	 */
 	private String generateAccountNumber(String branchCode) {
 		Long accountSequenceNumber = accountRepository.getNextSequenceValue();
+		String strAccountSeqNumber = String.valueOf(accountSequenceNumber);
 		final String branchCodepart = branchCode.substring(branchCode.length()-4, branchCode.length()); 
+		if (strAccountSeqNumber.length()>6) {
+			return branchCodepart + strAccountSeqNumber.substring(strAccountSeqNumber.length()-6, strAccountSeqNumber.length());
+		}
 		return branchCodepart + String.format("%06d", accountSequenceNumber);
 	}
 
