@@ -91,9 +91,9 @@ public class AccountServiceImpl implements AccountService {
 		String strAccountSeqNumber = String.valueOf(accountSequenceNumber);
 		final String branchCodepart = branchCode.substring(branchCode.length()-4, branchCode.length()); 
 		if (strAccountSeqNumber.length()>6) {
-			return branchCodepart + accountSequenceNumber.toString().substring(strAccountSeqNumber.length()-6, strAccountSeqNumber.length());
+			return branchCodepart + strAccountSeqNumber.substring(strAccountSeqNumber.length()-6, strAccountSeqNumber.length());
 		}
-		return branchCodepart + String.format("%06d", strAccountSeqNumber);
+		return branchCodepart + String.format("%06d", accountSequenceNumber);
 	}
 
 

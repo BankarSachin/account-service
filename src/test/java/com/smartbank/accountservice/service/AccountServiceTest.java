@@ -223,4 +223,17 @@ class AccountServiceTest {
         
         verify(accountRepository).findByAccountNumber(accountNumber);
     }
+
+	@Test
+	@Order(8)
+    void testBalanceAccountInvalidStatus() {
+		account.setAccountStatus(AccountStatus.CLOSED);
+		
+        when(accountRepository.findByAccountNumber(accountNumber)).thenReturn(Optional.of(account));
+
+        AccsException ex=  assertThrows(AccsException.class, () -> accountService.balance(accountNumber));
+        assertEquals(ExceptionCode.ACC_ACCOUNT_STATUS_INVALID,ex.getExceptionCode());
+        
+        verify(accountRepository).findByAccountNumber(accountNumber);
+    }
 }

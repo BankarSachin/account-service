@@ -2,12 +2,14 @@ package com.smartbank.accountservice.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.never;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.math.BigDecimal;
+import java.util.List;
+import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -24,33 +26,27 @@ import com.smartbank.accountservice.enums.AccountStatus;
 import com.smartbank.accountservice.enums.AccountType;
 import com.smartbank.accountservice.exception.AccsException;
 import com.smartbank.accountservice.exception.ExceptionCode;
-import com.smartbank.accountservice.mapper.CustomerMapper;
 import com.smartbank.accountservice.repository.CustomerRepository;
-import com.smartbank.accountservice.response.RegistrationResponse;
 
 @ExtendWith(MockitoExtension.class)
-class CustomerServiceTest {
-	
+class AuthzServiceTest {
+
 	@Mock
 	private CustomerRepository customerRepository;
 	
-	@Mock
-	private CustomerMapper customerMapper;
-	
-	@Mock
-	private AccountService accountService;
-	
 	@InjectMocks
-	private CustomerServiceImpl customerService;
-	
+	private AuthzServiceImpl authzService;
+
 	private CustomerAccountDTO customerAccountDTO;
 	private Customer customer;
 	private Account account;
 	private String accountNumber;
+	private Long customerId;
 	
 	@BeforeEach
 	public void setup() {
 		accountNumber = "0988567890";
+		customerId = 12345678L;
 		customerAccountDTO = new CustomerAccountDTO();
 		customerAccountDTO.setAccountType(AccountType.SAVINGS);
 		customerAccountDTO.setAmount(BigDecimal.ZERO);
@@ -65,63 +61,46 @@ class CustomerServiceTest {
 		account.setCurrentBalance(BigDecimal.valueOf(5000));
 	
 		customer = new Customer();
+		customer.setCustomerId(customerId);
 		customer.setName(customerAccountDTO.getName());
 		customer.setEmail(customerAccountDTO.getEmail());
 		customer.setPhoneNumber(customerAccountDTO.getPhoneNumber());
 		customer.setPassword(new BCryptPasswordEncoder().encode(customerAccountDTO.getPassword()));
+
+		customer.setAccount(List.of(account));
 	}
 	
 	@Test
-	void testRegisterNewCustomer() throws Exception {
-		
-		//Arrange
-		when(customerRepository.existsByEmail(customerAccountDTO.getEmail())).thenReturn(Boolean.FALSE);
-		when(customerRepository.existsByPhoneNumber(customerAccountDTO.getPhoneNumber())).thenReturn(Boolean.FALSE);
-		when(customerRepository.save(customer)).thenReturn(customer);
-		when(customerMapper.toEntity(customerAccountDTO)).thenReturn(customer);
-		when(accountService.createAccount(customer, customerAccountDTO)).thenReturn(account);
-		
-		//act
-		RegistrationResponse registrationResponse = customerService.registerCustomer(customerAccountDTO);
+	void testValidateAccess() throws AccsException {
+		//Arrabge
+		when(customerRepository.findByCustomerId(customerId)).thenReturn(Optional.of(customer));
 	
-		//assert
-		assertEquals(customerAccountDTO.getPhoneNumber(), registrationResponse.getPhoneNumber());
+		//Act
+		Boolean bool = authzService.validateAccess(customerId.toString(), accountNumber);
+		assertTrue(bool);
 		
-		//verify
-		verify(customerRepository,times(2)).save(customer);
-		
+		verify(customerRepository,times(1)).findByCustomerId(customerId);
 	}
 	
 	@Test
-	void testRegisterNewCustomerFailWithDuplicateEmail() throws Exception {
-		
-		//Arrange
-		when(customerRepository.existsByEmail(customerAccountDTO.getEmail())).thenReturn(Boolean.TRUE);
-		
-		//act
-		AccsException  ex = assertThrows(AccsException.class,()->customerService.registerCustomer(customerAccountDTO));
-		
-		assertEquals(ExceptionCode.ACCS_CUSTOMER_ALREADY_EXISTS, ex.getExceptionCode());
-		
-		//verify
-		verify(customerRepository,never()).save(customer);
-		
-	}
+	void testValidateAccessAuthzErrorOnNoAccOwner() {
+		//Arrabge
+		when(customerRepository.findByCustomerId(customerId)).thenReturn(Optional.of(customer));
 	
+		AccsException ex = assertThrows(AccsException.class, ()->authzService.validateAccess(customerId.toString(),"NOACC"));
+		assertEquals(ExceptionCode.ACC_AUTHZ_ERROR, ex.getExceptionCode());
+		
+		verify(customerRepository,times(1)).findByCustomerId(customerId);
+	}
+
 	@Test
-	void testRegisterNewCustomerFailWithDuplicateMobileNumber() throws Exception {
+	void testValidateAccessAuthzErrorOnCustomerNonExistsnce() {
+		//Arrabge
+		when(customerRepository.findByCustomerId(customerId)).thenReturn(Optional.empty());
+	
+		AccsException ex = assertThrows(AccsException.class, ()->authzService.validateAccess(customerId.toString(),"NOACC"));
+		assertEquals(ExceptionCode.ACC_AUTHZ_ERROR, ex.getExceptionCode());
 		
-		//Arrange
-		when(customerRepository.existsByEmail(customerAccountDTO.getEmail())).thenReturn(Boolean.FALSE);
-		when(customerRepository.existsByPhoneNumber(customerAccountDTO.getPhoneNumber())).thenReturn(Boolean.TRUE);
-		
-		//act
-		AccsException  ex = assertThrows(AccsException.class,()->customerService.registerCustomer(customerAccountDTO));
-		
-		assertEquals(ExceptionCode.ACCS_CUSTOMER_ALREADY_EXISTS, ex.getExceptionCode());
-		
-		//verify
-		verify(customerRepository,never()).save(customer);
-		
+		verify(customerRepository,times(1)).findByCustomerId(customerId);
 	}
 }
